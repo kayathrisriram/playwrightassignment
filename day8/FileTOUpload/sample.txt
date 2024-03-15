@@ -1,0 +1,80 @@
+/**
+ * Assignment:2
+ * 
+ * 1. Log in to Salesforce application 
+ *    Note: Create a json fie for the username and password and login 
+ * 2. Click the app launcher icon
+ * 3. Click View All
+ * 4. Enter Marketing in the Search text box
+ * 5. Click Marketing
+ * 6. Click Contacts dropdown
+ * 7. Click New Contact
+ * 8. Fill the mandatory fields
+ * 9. Click Save
+ * 10. Verify the Contact created
+ * 11. Click Upload files and verify the file uploaded
+ * 12. Click View All
+ * 13. Click the uploaded file
+ * 14. Download the file and save it in your directory
+ * 
+ */
+import {test} from '@playwright/test'
+import fs from 'fs';
+import path from 'path';
+
+   const testData=JSON.parse(fs.readFileSync(path.join(__dirname,"testdata.json"),'utf-8'));
+
+test(`Reading data from json file ${testData.testcase_id}`, async({page})=>{
+
+
+ await page.goto("https://login.salesforce.com/");
+ await page.fill("#username",testData.username);
+ await page.fill("#password",testData.password);
+ await page.click('[value="Log In"]')
+ await page.waitForTimeout(3000);
+  //Clicking on AppLauncher
+  await page.click(".slds-icon-waffle");
+  await page.locator('//button[text()="View All"]').click()
+ //searching for marketing tab
+  await page.getByPlaceholder("Search apps or items...").fill("Marketing");
+  await page.getByPlaceholder("Search apps or items...").focus()
+  await page.keyboard.press("Enter");
+  await page.click('//mark[text()="Marketing"]',{timeout:2000});
+  await page.locator('//span[text()="Contacts"]').click()
+
+  //creating to new contact
+  await page.click(`[data-id="Contact"] >a +* svg`)
+  await page.click(`//span[text()='New Contact']`)
+  await page.waitForLoadState('load')
+  await page.click('button[name="salutation"]');
+  await page.getByTitle('Ms.').click();
+  //await page.getByPlaceholder("First Name").fill('kayathri');
+  await page.getByPlaceholder("Last Name").fill('pasuran');
+  await page.click("button[name='SaveEdit']");
+  console.log( await page.getByRole("alertdialog").innerText());
+  //to upload file
+  const pathvalue="./day8/FileTOUpload/sample.txt"
+  await page.setInputFiles("div[class$=' slds-file-selector_images'] input[type='file']", "./day8/FileTOUpload/sample.txt");
+  //to download file
+  await page.locator("div[class$=' slds-file-selector_images'] input[type='file']").setInputFiles(__dirname,pathvalue)
+
+await page.waitForTimeout(10000)
+
+
+})
+/**
+ * 
+ * Assignment: 3
+ * 
+ * 1. Auto login to your Salesforce application
+ * 2. Click the App launcher icon
+ * 3. Click View All
+ * 4. Enter Content in the Search box
+ * 5. Click Content
+ * 6. Click Chatter
+ * 7. Click Question
+ * 8. Fill the Question and Details field
+ * 9. Click Ask
+ * 10. Verify the Question and Details created
+ * 
+ */
